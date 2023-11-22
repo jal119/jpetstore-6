@@ -22,5 +22,5 @@ services:
     build:
       context: .
     ports:
-      - 8083:8083
+      - 8083:8080
     restart: always
