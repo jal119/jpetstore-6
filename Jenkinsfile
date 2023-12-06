@@ -55,6 +55,27 @@ pipeline{
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
+        stage ('Build and push to docker hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh "docker build -t petshop ."
+                        sh "docker tag petshop jall1985/petshop:latest"
+                        sh "docker push jall1985/petshop:latest"
+                   }
+                }
+            }
+        }
+        stage("TRIVY"){
+            steps{
+                sh "trivy image jall1985/petshop:latest > trivy.txt"
+            }
+        }
+        stage ('Deploy to container'){
+            steps{
+                sh 'docker run -d --name pet1 -p 8080:8080 jall1985/petshop:latest'
+            }
+        }
    }
 }
 
